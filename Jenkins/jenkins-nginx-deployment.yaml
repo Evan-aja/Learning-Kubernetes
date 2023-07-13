@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: jenkins-nginx
+  name: jenkins-nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      io.kompose.service: jenkins-nginx
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.28.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/kubernetes-jenkins: "true"
+        io.kompose.service: jenkins-nginx
+    spec:
+      containers:
+        - image: thatevan/myjenkins-nginx
+          name: jenkins-nginx
+          ports:
+            - containerPort: 9000
+          resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,79 @@
+# docker run --name jenkins-docker --rm --detach \
+#           --privileged --network jenkins --network-alias docker \
+#           --env DOCKER_TLS_CERTDIR=/certs \
+#           --volume jenkins-docker-certs:/certs/client \
+#           --volume jenkins-data:/var/jenkins_home \
+#           --publish 3000:3000 --publish 5000:5000 --publish 2376:2376 \
+#           docker:dind --storage-driver overlay2
+
+# docker run --name jenkins-blueocean --detach \
+#           --network jenkins --env DOCKER_HOST=tcp://docker:2376 \
+#           --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 \
+#           --publish 8080:8080 --publish 50000:50000 \
+#           --volume jenkins-data:/var/jenkins_home \
+#           --volume jenkins-docker-certs:/certs/client:ro \
+#           --volume "$HOME":/home \
+#           --restart=on-failure \
+#           --env JAVA_OPTS="-Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true" \
+#           myjenkins-blueocean:lts
+
+version: '3'
+
+services:
+  jenkins-docker:
+    container_name: jenkins-docker
+    image: docker:dind
+    privileged: true
+    networks:
+      - jenkins
+    hostname: docker
+    environment:
+      - DOCKER_TLS_CERTDIR=/certs
+    volumes:
+      - jenkins-docker-certs:/certs/client
+      - jenkins-data:/var/jenkins_home
+    ports:
+      - 3000:3000
+      - 5000:5000
+      - 2376:2376
+    command: --storage-driver overlay2
+
+  jenkins-blueocean:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jenkins-blueocean
+    environment:
+      - DOCKER_HOST=tcp://docker:2376
+      - DOCKER_CERT_PATH=/certs/client
+      - DOCKER_TLS_VERIFY=1
+      - JAVA_OPTS=-Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
+    networks:
+      - jenkins
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - jenkins-docker-certs:/certs/client:ro
+    ports:
+      - 49000:49000
+      - 50000:50000
+    restart: on-failure
+
+  jenkins-nginx:
+    image: nginx
+    container_name: jenkins-nginx
+    ports:
+      - 9000:9000
+    networks:
+      - jenkins
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/jenkins.conf
+    depends_on:
+      - jenkins-blueocean
+    restart: always
+
+networks:
+  jenkins:
+
+volumes:
+  jenkins-docker-certs:
+  jenkins-data:

@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.28.0 (HEAD)
+  labels:
+    io.kompose.network/kubernetes-jenkins: "true"
+    io.kompose.service: jenkins-blueocean
+  name: jenkins-blueocean
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      io.kompose.service: jenkins-blueocean
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.28.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/kubernetes-jenkins: "true"
+        io.kompose.service: jenkins-blueocean
+      name: jenkins-blueocean
+    spec:
+      containers:
+        - env:
+            - name: DOCKER_CERT_PATH
+              value: /certs/client
+            - name: DOCKER_HOST
+              value: tcp://jenkins-docker-service:2376
+            - name: DOCKER_TLS_VERIFY
+              value: "1"
+            - name: JAVA_OPTS
+              value: -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
+          image: thatevan/myjenkins-blueocean
+          name: jenkins-blueocean
+          ports:
+            - containerPort: 49000
+            - containerPort: 50000
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/jenkins_home
+              name: jenkins-data
+            - mountPath: /certs/client
+              name: jenkins-docker-certs
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: jenkins-data
+          persistentVolumeClaim:
+            claimName: jenkins-data
+        - name: jenkins-docker-certs
+          persistentVolumeClaim:
+            claimName: jenkins-docker-certs
+            readOnly: true
+# ---
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   annotations:
+#     kompose.cmd: kompose convert -f docker-compose.yml
+#     kompose.version: 1.28.0 (HEAD)
+#   creationTimestamp: null
+#   labels:
+#     io.kompose.network/kubernetes-jenkins: "true"
+#     io.kompose.service: jenkins-blueocean
+#   name: jenkins-blueocean
+# spec:
+#   containers:
+#     - env:
+#         - name: DOCKER_CERT_PATH
+#           value: /certs/client
+#         - name: DOCKER_HOST
+#           value: tcp://jenkins-docker-service:2376
+#         - name: DOCKER_TLS_VERIFY
+#           value: "1"
+#         - name: JAVA_OPTS
+#           value: -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
+#       image: thatevan/myjenkins-blueocean
+#       name: jenkins-blueocean
+#       ports:
+#         - containerPort: 49000
+#         - containerPort: 50000
+#       resources: {}
+#       volumeMounts:
+#         - mountPath: /var/jenkins_home
+#           name: jenkins-data
+#         - mountPath: /certs/client
+#           name: jenkins-docker-certs
+#           readOnly: true
+#   restartPolicy: OnFailure
+#   volumes:
+#     - name: jenkins-data
+#       persistentVolumeClaim:
+#         claimName: jenkins-data
+#     - name: jenkins-docker-certs
+#       persistentVolumeClaim:
+#         claimName: jenkins-docker-certs
+#         readOnly: true
+# status: {}

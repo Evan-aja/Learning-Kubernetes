@@ -1,0 +1,2 @@
+FROM docker:dind
+RUN sed -i '/^_tls_san() {/,/^}/ s/^[\t ]*echo '\''localhost'\''/\t\t\techo "$SERVICE_NAME"\n\t\t\techo "$SERVICE_IP"\n&/' /usr/local/bin/dockerd-entrypoint.sh

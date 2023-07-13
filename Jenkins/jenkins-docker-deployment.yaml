@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: jenkins-docker
+  name: jenkins-docker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      io.kompose.service: jenkins-docker
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.28.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/kubernetes-jenkins: "true"
+        io.kompose.service: jenkins-docker
+    spec:
+      containers:
+        - args:
+            - --storage-driver
+            - overlay2
+          env:
+            - name: DOCKER_TLS_CERTDIR
+              value: /certs
+            # - name: SERVICE_IP
+            #   value: "$(kubectl get service jenkins-docker-service -o jsonpath='{.spec.clusterIP}')"
+            - name: SERVICE_NAME
+              value: "jenkins-docker-service"
+          image: thatevan/myjenkins-docker:latest
+          # image: docker:dind
+          name: jenkins-docker
+          ports:
+            - containerPort: 3000
+            - containerPort: 5000
+            - containerPort: 2376
+          resources: {}
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /certs/client
+              name: jenkins-docker-certs
+            - mountPath: /var/jenkins_home
+              name: jenkins-data
+      hostname: docker
+      restartPolicy: Always
+      volumes:
+        - name: jenkins-docker-certs
+          persistentVolumeClaim:
+            claimName: jenkins-docker-certs
+        - name: jenkins-data
+          persistentVolumeClaim:
+            claimName: jenkins-data
+status: {}

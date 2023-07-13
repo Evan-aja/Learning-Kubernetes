@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: jenkins-blueocean
+  name: jenkins-blueocean-service
+spec:
+  ports:
+    - name: "49000"
+      port: 49000
+      targetPort: 49000
+    - name: "50000"
+      port: 50000
+      targetPort: 50000
+  selector:
+    io.kompose.service: jenkins-blueocean
+  type: LoadBalancer
+status:
+  loadBalancer: {}

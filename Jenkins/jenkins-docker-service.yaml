@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: jenkins-docker
+  name: jenkins-docker-service
+spec:
+  ports:
+    - name: "3000"
+      port: 3000
+      targetPort: 3000
+    - name: "5000"
+      port: 5000
+      targetPort: 5000
+    - name: "2376"
+      port: 2376
+      targetPort: 2376
+  selector:
+    io.kompose.service: jenkins-docker
+  # type: LoadBalancer
+status:
+  loadBalancer: {}
