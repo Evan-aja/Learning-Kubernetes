@@ -2,8 +2,8 @@
 # This script is used to deploy the application to the server
 
 # Create Nginx Deployment and Service
-kubectl delete -f jenkins-nginx-service.yaml
-kubectl delete -f jenkins-nginx-deployment.yaml
+# kubectl delete -f jenkins-nginx-service.yaml
+# kubectl delete -f jenkins-nginx-deployment.yaml
 
 # Create Jenkins BlueOcean Deployment and Service
 kubectl delete -f jenkins-blueocean-service.yaml
