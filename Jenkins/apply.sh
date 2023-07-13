@@ -17,5 +17,5 @@ kubectl apply -f jenkins-blueocean-service.yaml
 kubectl apply -f jenkins-blueocean-deployment.yaml
 
 # Create Nginx Deployment and Service
-kubectl apply -f jenkins-nginx-service.yaml
-kubectl apply -f jenkins-nginx-deployment.yaml
+# kubectl apply -f jenkins-nginx-service.yaml
+# kubectl apply -f jenkins-nginx-deployment.yaml
