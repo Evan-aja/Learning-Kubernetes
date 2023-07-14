@@ -9,7 +9,7 @@ metadata:
     io.kompose.service: jenkins-blueocean
   name: jenkins-blueocean
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       io.kompose.service: jenkins-blueocean
