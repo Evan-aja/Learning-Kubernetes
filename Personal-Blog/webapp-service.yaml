@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: ./kompose-linux-amd64 convert -f docker-compose.yml -n blog-ku
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: webapp
+  name: webapp
+  namespace: blog-ku
+spec:
+  ports:
+    - name: "3000"
+      port: 3000
+      targetPort: 3000
+  selector:
+    io.kompose.service: webapp
+  type: ClusterIP
+status:
+  loadBalancer: {}

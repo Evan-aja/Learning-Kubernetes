@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: ./kompose-linux-amd64 convert -f docker-compose.yml -n notes-app
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: web
+  name: web
+  namespace: notes-app
+spec:
+  ports:
+    - name: "4000"
+      port: 4000
+      targetPort: 4000
+  selector:
+    io.kompose.service: web
+  type: ClusterIP
+status:
+  loadBalancer: {}

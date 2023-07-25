@@ -1,0 +1,9 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: slims-web-middleware
+  namespace: slims-web
+spec:
+  stripPrefix:
+    prefixes:
+      - /slims-web

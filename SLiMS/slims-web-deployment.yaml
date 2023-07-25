@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: ../kompose-linux-amd64 convert -f docker-compose.yml -n slims-web
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: slims-web
+  name: slims-web
+  namespace: slims-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: slims-web
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: ../kompose-linux-amd64 convert -f docker-compose.yml -n slims-web
+        kompose.version: 1.28.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/slims9-bulian-961-default: "true"
+        io.kompose.service: slims-web
+    spec:
+      containers:
+        - image: thatevan/slims-web:9.6.1
+          name: slims-web
+          resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: ./kompose-linux-amd64 convert -f docker-compose.yml -n notes-app
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mongo
+  name: mongo
+  namespace: notes-app
+spec:
+  ports:
+    - name: "27017"
+      port: 27017
+      targetPort: 27017
+  selector:
+    io.kompose.service: mongo
+status:
+  loadBalancer: {}

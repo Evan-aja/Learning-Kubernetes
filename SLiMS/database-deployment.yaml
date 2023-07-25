@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: ../kompose-linux-amd64 convert -f docker-compose.yml -n slims-web
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: database
+  name: database
+  namespace: slims-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: database
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: ../kompose-linux-amd64 convert -f docker-compose.yml -n slims-web
+        kompose.version: 1.28.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/slims9-bulian-961-default: "true"
+        io.kompose.service: database
+    spec:
+      containers:
+        - env:
+            - name: MYSQL_DATABASE
+              value: your_database_name
+            - name: MYSQL_PASSWORD
+              value: your_mysql_password
+            - name: MYSQL_ROOT_PASSWORD
+              value: rootpassword
+            - name: MYSQL_USER
+              value: your_mysql_user
+          image: mariadb:10.3
+          livenessProbe:
+            exec:
+              command:
+                - mysqladmin ping -h localhost
+            failureThreshold: 5
+            periodSeconds: 30
+            timeoutSeconds: 10
+          name: database
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: database-data
+      restartPolicy: Always
+      volumes:
+        - name: database-data
+          persistentVolumeClaim:
+            claimName: database-data
+status: {}

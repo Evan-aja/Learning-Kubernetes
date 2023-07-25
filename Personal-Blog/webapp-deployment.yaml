@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: ./kompose-linux-amd64 convert -f docker-compose.yml -n blog-ku
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: webapp
+  name: webapp
+  namespace: blog-ku
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      io.kompose.service: webapp
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: ./kompose-linux-amd64 convert -f docker-compose.yml -n blog-ku
+        kompose.version: 1.28.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/blog-ku-default: "true"
+        io.kompose.service: webapp
+    spec:
+      containers:
+        - env:
+#          - name: BASE_URL
+#            value: /blog
+          image: thatevan/blog-ku:latest
+          name: blog-ku
+          resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: ./kompose-linux-amd64 convert -f docker-compose.yml -n notes-app
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mongo
+  name: mongo
+  namespace: notes-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: mongo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: ./kompose-linux-amd64 convert -f docker-compose.yml -n notes-app
+        kompose.version: 1.28.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/nodejs-notes-app-default: "true"
+        io.kompose.service: mongo
+    spec:
+      containers:
+        - image: mongo:4.4.18
+          name: database
+          ports:
+            - containerPort: 27017
+              hostPort: 27017
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-claim0
+      restartPolicy: Always
+      volumes:
+        - name: mongo-claim0
+          persistentVolumeClaim:
+            claimName: mongo-claim0
+status: {}

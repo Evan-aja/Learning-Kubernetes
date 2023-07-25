@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: slims-web-ingress
+  namespace: slims-web
+  annotations:
+    spec.ingressClassName: "traefik"
+    traefik.ingress.kubernetes.io/router.middlewares: slims-web-slims-web-middleware@kubernetescrd
+spec:
+  rules:
+    - host: slims.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: slims-web
+                port:
+                  number: 8080
